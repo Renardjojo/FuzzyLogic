@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\FuzzySets">
+      <UniqueIdentifier>{3265c46e-832f-4bfe-8618-3b3506b1317f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -42,5 +45,52 @@
     <ClCompile Include="libs\imgui-docking\src\imgui_widgets.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\FuzzyRule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyExpression.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyLogic.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyRule.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyValue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\LinguisticValue.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\LinguisticVariable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Macro\ClassUtility.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\Point2D.hpp">
+      <Filter>Header Files\FuzzySets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\TriangularFuzzySet.hpp">
+      <Filter>Header Files\FuzzySets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\TrapezoidalFuzzySet.hpp">
+      <Filter>Header Files\FuzzySets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\RightFuzzySet.hpp">
+      <Filter>Header Files\FuzzySets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\LeftFuzzySet.hpp">
+      <Filter>Header Files\FuzzySets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\FuzzySet.hpp">
+      <Filter>Header Files\FuzzySets</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -88,8 +88,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>%(AdditionalModuleDependencies)</AdditionalModuleDependencies>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,8 +107,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>%(AdditionalModuleDependencies)</AdditionalModuleDependencies>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,9 +126,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>%(AdditionalModuleDependencies)</AdditionalModuleDependencies>
       <BrowseInformation>true</BrowseInformation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,8 +149,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\utilisateur\Desktop\FuzzyLogic\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\imgui-docking\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glfw-3.3.2.bin.WIN64\include;C:\Users\utilisateur\Desktop\FuzzyLogic\libs\glad\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalModuleDependencies>%(AdditionalModuleDependencies)</AdditionalModuleDependencies>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,6 +172,22 @@
     <ClCompile Include="libs\imgui-docking\src\imgui_tables.cpp" />
     <ClCompile Include="libs\imgui-docking\src\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyExpression.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyLogic.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyRule.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\FuzzySet.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\LeftFuzzySet.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\Point2D.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\RightFuzzySet.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\TrapezoidalFuzzySet.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\TriangularFuzzySet.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzySystem.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\FuzzyValue.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\LinguisticValue.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\LinguisticVariable.hpp" />
+    <ClInclude Include="include\Macro\ClassUtility.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
