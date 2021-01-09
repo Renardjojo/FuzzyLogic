@@ -305,10 +305,9 @@ int main(int, char**)
 
         static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
 
+        ImGui::Text("Input");
         for (auto&& input : system.getInputs())
-        {
-            ImGui::Text(input.getName().c_str());
-                
+        {                
             if (ImGui::CollapsingHeader(input.getName().c_str()))
             {
                 static bool show_lines = true;
@@ -349,7 +348,47 @@ int main(int, char**)
                 }
             }
         }
-        
+
+        ImGui::Text("Output");
+        if (ImGui::CollapsingHeader(system.getOutput().getName().c_str()))
+        {
+            static bool show_lines = true;
+            static bool show_fills = true;
+            static float fill_ref = 0;
+            ImGui::Checkbox("Lines", &show_lines); ImGui::SameLine();
+            ImGui::Checkbox("Fills", &show_fills);
+
+            ImPlot::SetNextPlotLimits(system.getOutput().getMin(), system.getOutput().getMax(), 0, 1);
+            if (ImPlot::BeginPlot(system.getOutput().getName().c_str(), "Days", "Price"))
+            {
+                for (auto&& value : system.getOutput().getValues())
+                {
+                    std::vector<float> pointX;
+                    std::vector<float> pointY;
+
+                    for (auto&& point : value.getFuzzySet().getPoints())
+                    {
+                        pointX.emplace_back(point.getX());
+                        pointY.emplace_back(point.getY());
+                    }
+
+                    if (show_fills)
+                    {
+                        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+
+                        ImPlot::PlotShaded(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
+
+                        ImPlot::PopStyleVar();
+                    }
+                    if (show_lines)
+                    {
+                        ImPlot::PlotLine(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
+                    }
+                }
+
+                ImPlot::EndPlot();
+            }
+        }
         
 
         // Rendering
