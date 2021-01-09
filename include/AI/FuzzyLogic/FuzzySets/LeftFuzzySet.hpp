@@ -44,9 +44,9 @@ namespace AI::FuzzyLogic::FuzzySet
             : FuzzySet<TPrecisionType>(in_min, in_max)
         {
             FuzzySet<TPrecisionType>::add(Point2D<TPrecisionType>(in_min, static_cast<TPrecisionType>(1)));
-            FuzzySet<TPrecisionType>::add(Point2D<TPrecisionType>(in_max, static_cast<TPrecisionType>(1)));
-            FuzzySet<TPrecisionType>::add(Point2D<TPrecisionType>(in_heightMax, static_cast<TPrecisionType>(0)));
+            FuzzySet<TPrecisionType>::add(Point2D<TPrecisionType>(in_heightMax , static_cast<TPrecisionType>(1)));
             FuzzySet<TPrecisionType>::add(Point2D<TPrecisionType>(in_baseMin, static_cast<TPrecisionType>(0)));
+            FuzzySet<TPrecisionType>::add(Point2D<TPrecisionType>(in_max, static_cast<TPrecisionType>(0)));
         }
 
         #pragma endregion //!constructor/destructor    
