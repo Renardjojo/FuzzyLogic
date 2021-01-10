@@ -187,7 +187,7 @@ int main(int, char**)
 
     // Ajout de la variable linguistique "Distance" (de 0 a 500 000 m)
     writeLine("Ajout de la variable Distance");
-    LinguisticVariable distance("Distance", 0.f, 500000.f);
+    LinguisticVariable distance("Distance", 0.f, 500000.f, "Km");
     distance.addValue(LinguisticValue("Faible", LeftFuzzySet(0.f, 500000.f, 30.f, 50.f)));
     distance.addValue(LinguisticValue("Moyenne", TrapezoidalFuzzySet(0.f, 500000.f, 40.f, 50.f, 100.f, 150.f)));
     distance.addValue(LinguisticValue("Grande", RightFuzzySet(0.f, 500000.f, 100.f, 150.f)));
@@ -195,7 +195,7 @@ int main(int, char**)
 
     // Ajout de la variable linguistique "Vitesse" (de 0 a 200)
     writeLine("Ajout de la variable Vitesse");
-    LinguisticVariable vitesse("Vitesse", 0.f, 200.f);
+    LinguisticVariable vitesse("Vitesse", 0.f, 200.f, "Km/h");
     vitesse.addValue(LinguisticValue("Lente", LeftFuzzySet(0.f, 200.f, 20.f, 30.f)));
     vitesse.addValue(LinguisticValue("PeuRapide", TrapezoidalFuzzySet(0.f, 200.f, 20.f, 30.f, 70.f, 80.f)));
     vitesse.addValue(LinguisticValue("Rapide", TrapezoidalFuzzySet(0.f, 200.f, 70.f, 80.f, 90.f, 110.f)));
@@ -204,7 +204,7 @@ int main(int, char**)
 
     // Ajout de la variable linguistique "Zoom" (de 0 a 5)
     writeLine("Ajout de la variable Zoom");
-    LinguisticVariable zoom("Zoom", 0.f, 5.f);
+    LinguisticVariable zoom("Zoom", 0.f, 5.f, "Level");
     zoom.addValue(LinguisticValue("Petit", LeftFuzzySet(0.f, 5.f, 1.f, 2.f)));
     zoom.addValue(LinguisticValue("Normal", TrapezoidalFuzzySet(0.f, 5.f, 1.f, 2.f, 3.f, 4.f)));
     zoom.addValue(LinguisticValue("Gros", RightFuzzySet(0.f, 5.f, 3.f, 4.f)));
@@ -229,7 +229,7 @@ int main(int, char**)
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS Rapide THEN Zoom IS Normal");
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS TresRapide THEN Zoom IS Gros");
     writeLine("9 regles ajoutees \n");
-
+    
     writeLine("3) Resolution de cas pratiques", true);
     // Cas pratique 1 : vitesse de 35 kms/h, et prochain changement de direction a 70m
     writeLine("Cas 1 :", true);
@@ -239,7 +239,7 @@ int main(int, char**)
     system.setInputVariable(distance, 70.f);
     writeLine("Attendu : zoom normal, centroide a 2.5");
     writeLine("Resultat : " + std::to_string(system.solve()) + "\n");
-
+    
     // Cas pratique 2 : vitesse de 25 kms/h, et prochain changement de direction a 70m
     system.resetCase();
     writeLine("Cas 2 :", true);
@@ -303,8 +303,6 @@ int main(int, char**)
             ImGui::ShowDemoWindow(&show_demo_window);
         }
 
-        static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
-
         ImGui::Text("Input");
         for (auto&& input : system.getInputs())
         {                
@@ -317,7 +315,7 @@ int main(int, char**)
                 ImGui::Checkbox("Fills", &show_fills);
 
                 ImPlot::SetNextPlotLimits(input.getMin(), input.getMax(), 0, 1);
-                if (ImPlot::BeginPlot(input.getName().c_str(), "Days", "Price"))
+                if (ImPlot::BeginPlot(input.getName().c_str(), input.getUnit().c_str(), "Degree of belonging"))
                 {
                     for (auto&& value : input.getValues())
                     {
@@ -359,7 +357,7 @@ int main(int, char**)
             ImGui::Checkbox("Fills", &show_fills);
 
             ImPlot::SetNextPlotLimits(system.getOutput().getMin(), system.getOutput().getMax(), 0, 1);
-            if (ImPlot::BeginPlot(system.getOutput().getName().c_str(), "Days", "Price"))
+            if (ImPlot::BeginPlot(system.getOutput().getName().c_str(), system.getOutput().getUnit().c_str(), "Degree of belonging"))
             {
                 for (auto&& value : system.getOutput().getValues())
                 {

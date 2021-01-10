@@ -25,7 +25,7 @@ namespace AI::FuzzyLogic
 
         #pragma region attribut
 
-        LinguisticVariable<TPrecisionType>      m_linguisticValue;
+        LinguisticVariable<TPrecisionType>      m_linguisticVariable;
         std::string                             m_linguisticValueName;
 
         #pragma endregion //!attribut
@@ -53,8 +53,8 @@ namespace AI::FuzzyLogic
         FuzzyExpression& operator=(FuzzyExpression && other) noexcept			= default;
 
         explicit constexpr inline
-        FuzzyExpression (const LinguisticVariable<TPrecisionType>& in_linguistiqueValue, const std::string& in_linguisticValueName) noexcept
-            :   m_linguisticValue {in_linguistiqueValue},
+        FuzzyExpression (const LinguisticVariable<TPrecisionType>& in_linguistiqueVariable, const std::string& in_linguisticValueName) noexcept
+            :   m_linguisticVariable { in_linguistiqueVariable },
                 m_linguisticValueName {in_linguisticValueName}
         {}
 
@@ -62,7 +62,7 @@ namespace AI::FuzzyLogic
 
         #pragma region accessor/mutator
 
-        DEFAULT_GETTER_SETTER(LinguisticValue, m_linguisticValue)
+        DEFAULT_GETTER_SETTER(LinguisticVariable, m_linguisticVariable)
         DEFAULT_GETTER_SETTER(Name, m_linguisticValueName)
 
         #pragma endregion //!accessor

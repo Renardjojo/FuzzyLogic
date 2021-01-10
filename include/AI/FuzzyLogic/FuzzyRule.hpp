@@ -47,33 +47,30 @@ namespace AI::FuzzyLogic
         }
 
         [[nodiscard]] inline constexpr
-        TPrecisionType searchAndComputePremiseDegree(std::vector<FuzzyValue<TPrecisionType>>& in_problem, const FuzzyExpression<TPrecisionType>& in_rulePremise, LinguisticValue<TPrecisionType>* in_val) const noexcept
+        TPrecisionType searchAndComputePremiseDegree(std::vector<FuzzyValue<TPrecisionType>>& in_problem, const FuzzyExpression<TPrecisionType>& in_rulePremise, const LinguisticValue<TPrecisionType>** in_val) const noexcept
         {
-            in_val = nullptr;
-            TPrecisionType premiseDegree = static_cast<TPrecisionType>(0);
-            typename std::vector<FuzzyValue<TPrecisionType>>::iterator it = in_problem.begin();
-            bool valueFound = false;
+            *in_val = nullptr;
             FuzzyValue problemValue;
 
-            while(++it != in_problem.end() && !valueFound)
+            for(auto&& it = in_problem.begin(); it != in_problem.end(); ++it)
             {
                 problemValue = *it;
-                if (&in_rulePremise.getLinguisticValue() == &problemValue.getLinguistiqueVariable())
+                if (in_rulePremise.getLinguisticVariable().getName() == problemValue.getLinguistiqueVariable().getName())
                 {
-                    premiseDegree = computeDegree(in_rulePremise, in_val, problemValue);
-                    valueFound = true;
+                    return computeDegree(in_rulePremise, in_val, problemValue);
                 }
             }
-            return premiseDegree;
+
+            return static_cast<TPrecisionType>(0);
         }
 
         [[nodiscard]] inline constexpr
-        TPrecisionType computeDegree(const FuzzyExpression<TPrecisionType>& in_rulePremise, const LinguisticValue<TPrecisionType>* in_val, const FuzzyValue<TPrecisionType>& in_problemeValue) const noexcept
+        TPrecisionType computeDegree(const FuzzyExpression<TPrecisionType>& in_rulePremise, const LinguisticValue<TPrecisionType>** in_val, const FuzzyValue<TPrecisionType>& in_problemeValue) const noexcept
         {
-            in_val = in_rulePremise.getLinguisticValue().linguisticValueByName(in_rulePremise.getName());
-            if (in_val != nullptr)
+            *in_val = in_rulePremise.getLinguisticVariable().linguisticValueByName(in_rulePremise.getName());
+            if (*in_val != nullptr)
             {
-                return in_val->degreeAtValue(in_problemeValue.getValue()); // this is fuzzyfication here
+                return (*in_val)->degreeAtValue(in_problemeValue.getValue()); // this is fuzzyfication here
             }
             else
             {
@@ -82,15 +79,9 @@ namespace AI::FuzzyLogic
         }
 
         [[nodiscard]] inline constexpr
-        bool linguisticValueNotFound(const LinguisticValue<TPrecisionType>* const in_val) const noexcept
-        {
-            return in_val == nullptr;
-        }
-
-        [[nodiscard]] inline constexpr
         FuzzySet::FuzzySet<TPrecisionType> computeResultingFuzzySet(TPrecisionType in_ruleDegree) const noexcept
         {
-            return m_conclusion.getLinguisticValue().linguisticValueByName(m_conclusion.getName())->getFuzzySet() * in_ruleDegree;
+            return m_conclusion.getLinguisticVariable().linguisticValueByName(m_conclusion.getName())->getFuzzySet() * in_ruleDegree;
         }
 
         #pragma endregion //!methods
@@ -142,11 +133,18 @@ namespace AI::FuzzyLogic
                 rule[0] = rule[0].substr(3); // remove "IF"
                 indexStr = rule[0].find(andStrKey);
 
-                while (indexStr != std::string::npos)
+                if (indexStr == std::string::npos)
                 {
                     prem.emplace_back(rule[0].substr(0, indexStr));
-                    prem.emplace_back(rule[0].substr(indexStr + andStrKey.length()));
-                    indexStr = prem.back().find(andStrKey);
+                }
+                else
+                {
+                    while (indexStr != std::string::npos)
+                    {
+                        prem.emplace_back(rule[0].substr(0, indexStr));
+                        prem.emplace_back(rule[0].substr(indexStr + andStrKey.length()));
+                        indexStr = prem.back().find(andStrKey);
+                    }
                 }
 
                 const std::string isStrKey = " IS ";
@@ -185,17 +183,14 @@ namespace AI::FuzzyLogic
         bool const tryApply(FuzzySet::FuzzySet<TPrecisionType>& in_rst, std::vector<FuzzyValue<TPrecisionType>>& in_problem) const noexcept
         {
             TPrecisionType m_ruleDegree = static_cast<TPrecisionType>(1);
-            LinguisticValue<TPrecisionType>* val = nullptr;
+            const LinguisticValue<TPrecisionType>* val = nullptr;
 
             for (const FuzzyExpression<TPrecisionType>& localPremise : m_premises)
             {
-                FuzzyExpression<TPrecisionType> rulePremise = localPremise;
-                TPrecisionType localDegree = searchAndComputePremiseDegree(in_problem, rulePremise, val);
-
-                if (linguisticValueNotFound(val))
-                {
+                TPrecisionType localDegree = searchAndComputePremiseDegree(in_problem, localPremise, &val);
+                
+                if (!val || localDegree == 0.f)
                     return false;
-                }
 
                 changeOverallRuleDegree(localDegree, m_ruleDegree);
             }

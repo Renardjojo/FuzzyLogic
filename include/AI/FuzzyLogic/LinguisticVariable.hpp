@@ -32,6 +32,7 @@ namespace AI::FuzzyLogic
         std::vector<LinguisticValue<TPrecisionType>> m_values;
         TPrecisionType m_minValue;
         TPrecisionType m_maxValue;
+        std::string m_unit;
 
         #pragma endregion //!attribut
     
@@ -58,11 +59,12 @@ namespace AI::FuzzyLogic
         LinguisticVariable& operator=(LinguisticVariable && other) noexcept			= default;
 
         explicit constexpr inline
-        LinguisticVariable(std::string in_name, TPrecisionType in_min, TPrecisionType in_max) noexcept
+        LinguisticVariable(const std::string& in_name, TPrecisionType in_min, TPrecisionType in_max, const std::string& in_unit = "") noexcept
             :   m_values    {},
                 m_name      {in_name},
                 m_minValue  {in_min},
-                m_maxValue  {in_max}
+                m_maxValue  {in_max},
+                m_unit      {in_unit}
         {}
     
         #pragma endregion //!constructor/destructor
@@ -76,9 +78,9 @@ namespace AI::FuzzyLogic
         }
 
         constexpr inline
-        void addValue(const std::string& in_name, FuzzySet::FuzzySet<TPrecisionType> in_fussySet) noexcept
+        void addValue(const std::string& in_name, FuzzySet::FuzzySet<TPrecisionType> in_fussySet, const std::string& in_unit = "") noexcept
         {
-            m_values.emplace_back(LinguisticValue<TPrecisionType>(in_name, in_fussySet));
+            m_values.emplace_back(LinguisticValue<TPrecisionType>(in_name, in_fussySet, in_unit));
         }
 
         constexpr inline
@@ -108,6 +110,7 @@ namespace AI::FuzzyLogic
         DEFAULT_GETTER_SETTER(Values, m_values)
         DEFAULT_GETTER_SETTER(Min, m_minValue)
         DEFAULT_GETTER_SETTER(Max, m_maxValue)
+        DEFAULT_GETTER_SETTER(Unit, m_unit)
 
         #pragma endregion //!accessor/mutator    
     };

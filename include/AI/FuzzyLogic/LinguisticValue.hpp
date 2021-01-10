@@ -54,8 +54,8 @@ namespace AI::FuzzyLogic
 
         explicit constexpr inline
         LinguisticValue(const std::string& in_name, const FuzzySet::FuzzySet<TPrecisionType>& in_fuzzySet) noexcept
-            :   m_name      {in_name},
-                m_fuzzySet  {in_fuzzySet}
+            :   m_fuzzySet  {in_fuzzySet},
+                m_name      {in_name}
         {}
 
         #pragma endregion //!constructor/destructor

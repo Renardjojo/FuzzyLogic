@@ -39,16 +39,16 @@ namespace AI::FuzzyLogic::FuzzySet
         [[nodiscard]] constexpr inline 
         bool valueOutOfBound(TPrecisionType in_xValue) const noexcept
         {
-            return (in_xValue < m_min || in_xValue > m_max);
+            return in_xValue < m_min || in_xValue > m_max;
         }
 
         [[nodiscard]] constexpr inline 
         TPrecisionType getValueFromInterpolation(TPrecisionType in_xValue) const noexcept
         {
-            auto before = std::find_if(m_points.begin(), m_points.end(), [&](const Point2D<TPrecisionType>& pt) { return pt.getX() <= in_xValue; });
-            auto after = std::find_if(m_points.rbegin(), m_points.rend(), [&](const Point2D<TPrecisionType>& pt) { return pt.getX() >= in_xValue; });
+            auto before = std::find_if(m_points.rbegin(), m_points.rend(), [&](const Point2D<TPrecisionType>& pt) { return pt.getX() <= in_xValue; });
+            auto after = std::find_if(m_points.begin(), m_points.end(), [&](const Point2D<TPrecisionType>& pt) { return pt.getX() >= in_xValue; });
 
-            if (&*before == &*after)
+            if (*before == *after)
             {
                 return before->getY();
             }
@@ -87,7 +87,7 @@ namespace AI::FuzzyLogic::FuzzySet
             TPrecisionType slope1 = 0;
             TPrecisionType slope2 = 0;
             TPrecisionType delta = 0;
-            if (xPrime-x != 0)
+            if (xPrime - x != static_cast<TPrecisionType>(0))
             {
                 slope1 = (in_fs1.degreeAtValue(xPrime) - in_fs1.degreeAtValue(x)) / (xPrime - x);
                 slope2 = (in_fs2.degreeAtValue(xPrime) - in_fs2.degreeAtValue(x)) / (xPrime - x);
@@ -103,7 +103,7 @@ namespace AI::FuzzyLogic::FuzzySet
         [[nodiscard]] constexpr inline
         static bool goToNextPointOnFuzzySet(typename std::vector<Point2D<TPrecisionType>>::const_iterator& in_it, typename std::vector<Point2D<TPrecisionType>>::const_iterator in_itEnd) noexcept
         {
-            return !(++in_it == in_itEnd);
+            return ++in_it == in_itEnd;
         }
 
         [[nodiscard]] constexpr inline
@@ -217,7 +217,9 @@ namespace AI::FuzzyLogic::FuzzySet
             typename std::vector<Point2D<TPrecisionType>>::const_iterator it1 = in_fs1.getPoints().begin();
             typename std::vector<Point2D<TPrecisionType>>::const_iterator it2 = in_fs2.getPoints().begin();
 
-            Point2D<TPrecisionType> oldPt1          = *it1;
+            Point2D<TPrecisionType> oldPt1 = *it1;
+
+            //relativePosition is the difference between Y1 and Y2. -1 if Y1 > Y2. 1 if Y1 < Y2. 0 if Y1 == Y2
             int relativePosition    = 0;
             int newRelativePosition = getSign(it1->getY() - it2->getY());
 
@@ -237,6 +239,7 @@ namespace AI::FuzzyLogic::FuzzySet
                 if (positionsHaveChanged(relativePosition, newRelativePosition))
                 {
                     addIntersectionToResult(in_fs1, in_fs2, x1, x2, result, oldPt1);
+
                     //go to the next points
                     if (x1 < x2)
                     {
@@ -285,6 +288,7 @@ namespace AI::FuzzyLogic::FuzzySet
                     endOfList2 = goToNextPointOnFuzzySet(it2, in_fs2.getPoints().end());
                 }
             }
+
             return result;
         }
 
@@ -309,7 +313,7 @@ namespace AI::FuzzyLogic::FuzzySet
                     if (isRectangle(oldPt, newPt))
                     {
                         localArea = computeRectangleArea(oldPt, newPt);
-                        (oldPt, newPt, localArea, static_cast<TPrecisionType>(1) / static_cast<TPrecisionType>(2), totalArea, ponderatedArea);
+                        incrementAreas(oldPt, newPt, localArea, static_cast<TPrecisionType>(1) / static_cast<TPrecisionType>(2), totalArea, ponderatedArea);
                     }
                     else
                     {

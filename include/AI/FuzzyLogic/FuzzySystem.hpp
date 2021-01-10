@@ -17,6 +17,11 @@
 #include "AI/FuzzyLogic/LinguisticVariable.hpp"
 #include "AI/FuzzyLogic/FuzzyRule.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "implot.h"
+
 namespace AI::FuzzyLogic
 {
     template <typename TPrecisionType = float>
@@ -116,7 +121,8 @@ namespace AI::FuzzyLogic
                 {
                     res = res | resultingSet;
                 }
-            }
+            }            
+
             return res.centroid();
         }
 
