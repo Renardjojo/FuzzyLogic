@@ -188,6 +188,7 @@
     <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\TriangularFuzzySet.hpp" />
     <ClInclude Include="include\AI\FuzzyLogic\FuzzySystem.hpp" />
     <ClInclude Include="include\AI\FuzzyLogic\FuzzyValue.hpp" />
+    <ClInclude Include="include\AI\FuzzyLogic\GUI\ImGuiFuzzySystemGui.hpp" />
     <ClInclude Include="include\AI\FuzzyLogic\LinguisticValue.hpp" />
     <ClInclude Include="include\AI\FuzzyLogic\LinguisticVariable.hpp" />
     <ClInclude Include="include\Macro\ClassUtility.hpp" />

@@ -16,6 +16,9 @@
     <Filter Include="Header Files\FuzzySets">
       <UniqueIdentifier>{3265c46e-832f-4bfe-8618-3b3506b1317f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GUI">
+      <UniqueIdentifier>{456868b8-989e-4ccd-a1d6-374dd1c8c7e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="libs\glad\src\glad.c">
@@ -97,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="include\AI\FuzzyLogic\FuzzySets\FuzzySet.hpp">
       <Filter>Header Files\FuzzySets</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\FuzzyLogic\GUI\ImGuiFuzzySystemGui.hpp">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
