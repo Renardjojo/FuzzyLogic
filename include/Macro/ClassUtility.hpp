@@ -31,6 +31,10 @@
 
 #define DEFAULT_GETTER(variableName, variable)                                                                    \
         [[nodiscard]] inline constexpr                                                                            \
+        decltype(variable)& get ## variableName () noexcept { return variable;}
+
+#define DEFAULT_CONST_GETTER(variableName, variable)                                                              \
+        [[nodiscard]] inline constexpr                                                                            \
         const decltype(variable)& get ## variableName () const noexcept { return variable;}
 
 
@@ -40,5 +44,5 @@
 
 
 #define DEFAULT_GETTER_SETTER(variableName, variable)                                                             \
-        DEFAULT_GETTER(variableName, variable)                                                                    \
+        DEFAULT_CONST_GETTER(variableName, variable)                                                                    \
         DEFAULT_SETTER(variableName, variable)
