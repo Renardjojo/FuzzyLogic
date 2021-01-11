@@ -57,6 +57,18 @@ using namespace std;
 using namespace AI::FuzzyLogic;
 using namespace AI::FuzzyLogic::FuzzySet;
 
+static void PushStyleCompact()
+{
+    ImGuiStyle& style = ImGui::GetStyle();
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style.FramePadding.x, (float)(int)(style.FramePadding.y * 0.70f)));
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x, (float)(int)(style.ItemSpacing.y * 0.70f)));
+}
+
+static void PopStyleCompact()
+{
+    ImGui::PopStyleVar(2);
+}
+
 void writeLine(string msg, bool stars = false)
 {
     if (stars)
@@ -219,16 +231,19 @@ int main(int, char**)
     // Peu Ra || N | N | P |
     // Rapide || G | N | P |
     // Tres R || G | G | P |
-    system.addFuzzyRule("IF Distance IS Grande THEN Zoom IS Petit");
     system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS Lente THEN Zoom IS Normal");
-    system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS PeuRapide THEN Zoom IS Normal");
-    system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS Rapide THEN Zoom IS Gros");
-    system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS TresRapide THEN Zoom IS Gros");
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS Lente THEN Zoom IS Petit");
+    system.addFuzzyRule("IF Distance IS Grande AND Vitesse IS Lente THEN Zoom IS Petit");
+    system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS PeuRapide THEN Zoom IS Normal");
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS PeuRapide THEN Zoom IS Normal");
+    system.addFuzzyRule("IF Distance IS Grande AND Vitesse IS PeuRapide THEN Zoom IS Petit");
+    system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS Rapide THEN Zoom IS Gros");
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS Rapide THEN Zoom IS Normal");
+    system.addFuzzyRule("IF Distance IS Grande AND Vitesse IS Rapide THEN Zoom IS Petit");
+    system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS TresRapide THEN Zoom IS Gros");
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS TresRapide THEN Zoom IS Gros");
-    writeLine("9 regles ajoutees \n");
+    system.addFuzzyRule("IF Distance IS Grande AND Vitesse IS TresRapide THEN Zoom IS Petit");
+    writeLine("12 regles ajoutees \n");
     
     writeLine("3) Resolution de cas pratiques", true);
     // Cas pratique 1 : vitesse de 35 kms/h, et prochain changement de direction a 70m
@@ -388,7 +403,55 @@ int main(int, char**)
             }
         }
         
+    if (ImGui::TreeNode("Borders, background"))
+    {
+        if (ImGui::BeginTable("##table1", system.getInputs()[0].getValues().size() + 1, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+        {
+            //Columns
+            ImGui::TableSetupColumn((system.getInputs()[0].getName() + "/" + system.getInputs()[1].getName()).c_str());
 
+            for (auto&& input : system.getInputs()[0].getValues())
+            {
+                float font_size = ImGui::GetFontSize() * input.getName().size() / 2;
+                ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
+                ImGui::TableSetupColumn(input.getName().c_str());
+            }
+
+            //Row
+            ImGui::TableHeadersRow();
+
+            for (int row = 0; row < system.getInputs()[1].getValues().size(); ++row)
+            {
+                ImGui::TableNextRow();
+                
+                ImGui::TableSetColumnIndex(0);
+
+                ImGui::Text(system.getInputs()[1].getValues()[row].getName().c_str());
+
+                int idElem = 0;
+
+                for (int column = 1; column < system.getInputs()[0].getValues().size() + 1; ++column)
+                {
+                    ImGui::TableSetColumnIndex(column);
+                    
+                    idElem = row * system.getInputs()[0].getValues().size() + (column - 1);
+                    if (ImGui::Button((system.getRules()[idElem].getConclusion().getName() + "##" + std::to_string(idElem)).c_str(), ImVec2(-FLT_MIN, 0.0f)))
+                    { 
+                        int currentIndex = 0;
+                        while (system.getOutput().getValues()[currentIndex].getName() != system.getRules()[idElem].getConclusion().getName().c_str())
+                        {
+                            ++currentIndex;
+                        }
+
+                        system.getRules()[idElem].setConclusion(FuzzyExpression(system.getOutput(), system.getOutput().getValues()[++currentIndex % system.getOutput().getValues().size()].getName()));
+                    }
+                }
+            }
+            ImGui::EndTable();
+        }
+        ImGui::TreePop();
+    }
+        
         // Rendering
         ImGui::Render();
         int display_w, display_h;

@@ -151,7 +151,8 @@ namespace AI::FuzzyLogic
         DEFAULT_GETTER_SETTER(Name, m_name)
         DEFAULT_GETTER_SETTER(Inputs, m_inputs)
         DEFAULT_GETTER_SETTER(Output, m_output)
-        DEFAULT_GETTER_SETTER(Rules, m_rules)
+        DEFAULT_GETTER(Rules, m_rules)
+        DEFAULT_SETTER(Rules, m_rules)
         DEFAULT_GETTER_SETTER(Problem, m_problem)
 
         #pragma endregion //!accessor/mutator
