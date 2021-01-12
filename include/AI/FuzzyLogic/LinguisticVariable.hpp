@@ -106,10 +106,20 @@ namespace AI::FuzzyLogic
     
         #pragma region accessor/mutator
 
-        DEFAULT_GETTER_SETTER(Name, m_name)
+        DEFAULT_CONST_GETTER(Name, m_name)
+        DEFAULT_GETTER(Name, m_name)
+        DEFAULT_SETTER(Name, m_name)
+
         DEFAULT_GETTER_SETTER(Values, m_values)
-        DEFAULT_GETTER_SETTER(Min, m_minValue)
-        DEFAULT_GETTER_SETTER(Max, m_maxValue)
+
+        DEFAULT_SETTER(Min, m_minValue)
+        DEFAULT_GETTER(Min, m_minValue)
+        DEFAULT_CONST_GETTER(Min, m_minValue)
+
+        DEFAULT_SETTER(Max, m_maxValue)
+        DEFAULT_GETTER(Max, m_maxValue)
+        DEFAULT_CONST_GETTER(Max, m_maxValue)
+
         DEFAULT_GETTER_SETTER(Unit, m_unit)
 
         #pragma endregion //!accessor/mutator    

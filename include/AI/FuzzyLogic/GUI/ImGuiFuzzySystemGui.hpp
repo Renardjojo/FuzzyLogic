@@ -11,13 +11,17 @@
 #pragma once
 
 #include "imgui.h"
+#include "imgui_internal.h"
+#include "imgui_stdlib.h"
 #include "implot.h"
 #include "AI/FuzzyLogic/LinguisticVariable.hpp"
 
+
 namespace AI::FuzzyLogic::GUI
 {
+
     template <typename TPrecisionType = float>
-    void displayLinguistiqueVariable(const AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
+    void displayLinguisticVariable(const AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
     {
         bool show_lines = true;
         bool show_fills = true;
@@ -44,7 +48,7 @@ namespace AI::FuzzyLogic::GUI
                 {
                     ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
 
-                        ImPlot::PlotShaded(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
+                    ImPlot::PlotShaded(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
 
                     ImPlot::PopStyleVar();
                 }
@@ -54,17 +58,63 @@ namespace AI::FuzzyLogic::GUI
                 }
             }
 
-            ImPlot::EndPlot();
+            static float  frequency = 0.1f;
+            static float  amplitude = 0.5f;
+            static ImVec4 color = ImVec4(1, 1, 0, 1);
+            static float  alpha = 1.0f;
+            static bool   line = false;
+            static float  thickness = 1;
+            static bool   markers = false;
+            static bool   shaded = false;
+
+            if (ImPlot::IsPlotHovered() && ImGui::IsMouseClicked(1))
+            {
+                ImGui::OpenPopup("my_toggle_popup");
+            }
+
+            if (ImGui::BeginPopup("my_toggle_popup"))
+            {
+                ImGui::SliderFloat("Frequency", &frequency, 0, 1, "%0.2f");
+                ImGui::SliderFloat("Amplitude", &amplitude, 0, 1, "%0.2f");
+                ImGui::Separator();
+                ImGui::ColorEdit3("Color", &color.x);
+                ImGui::SliderFloat("Transparency", &alpha, 0, 1, "%.2f");
+                ImGui::Checkbox("Line Plot", &line);
+                if (line)
+                {
+                    ImGui::SliderFloat("Thickness", &thickness, 0, 5);
+                    ImGui::Checkbox("Markers", &markers);
+                    ImGui::Checkbox("Shaded", &shaded);
+                }
+                ImGui::EndPopup();
+            }
+        }
+        ImPlot::EndPlot();
+    }
+
+    template <typename TPrecisionType = float>
+    void displayLinguisticVariableWithCollapsingHeader(const AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
+    {
+        if (ImGui::CollapsingHeader(in_linguisticVariable.getName().c_str()))
+        {
+            displayLinguisticVariable<TPrecisionType>(in_linguisticVariable);
         }
     }
 
     template <typename TPrecisionType = float>
-    void displayLinguistiqueVariableWithCollapsingHeader(const AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
+    void displayLinguisticVariableSetup(AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
     {
-        if (ImGui::CollapsingHeader(in_linguisticVariable.getName().c_str()))
+        ImGui::PushID(&in_linguisticVariable);
+
+        if (ImGui::CollapsingHeader((in_linguisticVariable.getName() + "###CollapsingHeader").c_str()))
         {
-            displayLinguistiqueVariable<TPrecisionType>(in_linguisticVariable);
+            ImGui::InputText("Name", &in_linguisticVariable.getName());
+            ImGui::DragFloatRange2("Min/Max values", &in_linguisticVariable.getMin(), &in_linguisticVariable.getMax());
+
+            displayLinguisticVariable(in_linguisticVariable);
         }
+
+        ImGui::PopID();
     }
 
     template <typename TPrecisionType = float>
@@ -115,6 +165,27 @@ namespace AI::FuzzyLogic::GUI
             ImGui::EndTable();
         }
         ImGui::TreePop();
+    }
+
+    template <typename TPrecisionType = float>
+    void displayFuzzySystemSetupPanel(AI::FuzzyLogic::FuzzySystem<TPrecisionType>& in_system)
+    {
+        if (ImGui::Button("Add input"))
+        {
+            in_system.addInputVariable(LinguisticVariable<TPrecisionType>());
+        }
+
+        for (auto&& input : in_system.getInputs())
+        {
+            displayLinguisticVariableSetup(input);
+        }
+
+        if (ImGui::Button("Set outuput"))
+        {
+            in_system.setOutput(LinguisticVariable<TPrecisionType>());
+        }
+        
+        displayLinguisticVariableSetup(in_system.getOutput());
     }
 
 } /*namespace AI::FuzzyLogic::GUI*/

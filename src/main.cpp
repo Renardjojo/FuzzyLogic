@@ -320,20 +320,23 @@ int main(int, char**)
             ImGui::ShowDemoWindow(&show_demo_window);
         }
 
-        ImGui::Text("Input");
-        for (auto&& input : system.getInputs())
+        displayFuzzySystemSetupPanel(system);
+        
+        if (ImGui::TreeNode("Borders, background"))
         {
-            displayLinguistiqueVariableWithCollapsingHeader(input);
+            displayFuzzyRules(system);
         }
 
-        ImGui::Text("Output");
-        displayLinguistiqueVariableWithCollapsingHeader(system.getOutput());
         
-    if (ImGui::TreeNode("Borders, background"))
-    {
-        displayFuzzyRules(system);
-    }
-        
+        static float rst = 0.f;
+
+        if (ImGui::Button("Solve"))
+        {
+            rst = system.solve();
+        }
+        ImGui::SameLine();
+        ImGui::Text(to_string(rst).c_str());
+
         // Rendering
         ImGui::Render();
         int display_w, display_h;

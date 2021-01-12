@@ -57,6 +57,9 @@
     <ClCompile Include="libs\implot-0.8\src\implot_items.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="libs\imgui-docking\misc\cpp\imgui_stdlib.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AI\FuzzyLogic\FuzzyExpression.hpp">
