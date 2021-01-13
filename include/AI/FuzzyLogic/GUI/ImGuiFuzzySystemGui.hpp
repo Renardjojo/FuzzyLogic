@@ -19,7 +19,6 @@
 
 namespace AI::FuzzyLogic::GUI
 {
-
     template <typename TPrecisionType = float>
     void displayLinguisticVariable(const AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
     {
@@ -29,6 +28,20 @@ namespace AI::FuzzyLogic::GUI
         static float fill_ref = 0;
         ImGui::Checkbox("Lines", &show_lines); ImGui::SameLine();
         ImGui::Checkbox("Fills", &show_fills);
+
+        ImGui::BeginGroup();
+
+        // allow legend labels to be dragged and dropped
+        ImGui::Selectable("DragMe", false, 0, ImVec2(100, 0));
+        int i = 0;
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
+            ImGui::SetDragDropPayload("DND_PLOT", &i, sizeof(int));
+            ImGui::TextUnformatted("DragMe");
+            ImGui::EndDragDropSource();
+        }
+
+        ImGui::EndGroup();
+        ImGui::SameLine();
 
         ImPlot::SetNextPlotLimits(in_linguisticVariable.getMin(), in_linguisticVariable.getMax(), 0, 1);
         if (ImPlot::BeginPlot(in_linguisticVariable.getName().c_str(), in_linguisticVariable.getUnit().c_str(), "Degree of belonging"))
@@ -57,6 +70,25 @@ namespace AI::FuzzyLogic::GUI
                     ImPlot::PlotLine(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
                 }
             }
+
+            if (ImPlot::BeginLegendDragDropSource("DragMe")) {
+                int i = 0;
+                ImGui::SetDragDropPayload("DND_PLOT", &i, sizeof(int));
+                ImGui::TextUnformatted("DragMe");
+                ImPlot::EndLegendDragDropSource();
+            }
+
+            //Start drag and drop prefab fuzzy set
+            // make our plot a drag and drop target
+            if (ImGui::BeginDragDropTarget()) {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_PLOT")) {
+                    int i = *(int*)payload->Data;
+                    std::cout << i << std::endl;
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+
 
             static float  frequency = 0.1f;
             static float  amplitude = 0.5f;
@@ -187,5 +219,4 @@ namespace AI::FuzzyLogic::GUI
         
         displayLinguisticVariableSetup(in_system.getOutput());
     }
-
 } /*namespace AI::FuzzyLogic::GUI*/
