@@ -65,9 +65,9 @@ namespace AI::FuzzyLogic::FuzzySet
                 m_y {in_y}
         {}
 
-        std::string toString()
+        std::string toString() const noexcept
         {
-            return "(" + m_x + ";" + m_y + ")";
+            return std::string("(" + std::to_string(m_x) + ";" + std::to_string(m_y) + ")");
         }  
 
         #pragma endregion //!methods 

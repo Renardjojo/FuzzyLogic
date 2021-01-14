@@ -1099,7 +1099,8 @@ void ShowDemoWindow(bool* p_open) {
             }
             ImPlot::EndPlot();
         }
-        if (ImGui::BeginDragDropTarget()) {
+        if (ImGui::BeginDragDropTarget())
+        {
            const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DIGITAL_PLOT");
             if (payload) {
                 int i = *(int*)payload->Data;

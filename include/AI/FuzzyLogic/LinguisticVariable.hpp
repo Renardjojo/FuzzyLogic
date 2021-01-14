@@ -78,7 +78,7 @@ namespace AI::FuzzyLogic
         }
 
         constexpr inline
-        void addValue(const std::string& in_name, FuzzySet::FuzzySet<TPrecisionType> in_fussySet, const std::string& in_unit = "") noexcept
+        void addValue(const std::string& in_name, const FuzzySet::FuzzySet<TPrecisionType>& in_fussySet, const std::string& in_unit = "") noexcept
         {
             m_values.emplace_back(LinguisticValue<TPrecisionType>(in_name, in_fussySet, in_unit));
         }

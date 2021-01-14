@@ -14,13 +14,13 @@
 #include "imgui_internal.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
-#include "AI/FuzzyLogic/LinguisticVariable.hpp"
 
+#include "AI/FuzzyLogic/FuzzyLogic.hpp"
 
 namespace AI::FuzzyLogic::GUI
 {
     template <typename TPrecisionType = float>
-    void displayLinguisticVariable(const AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
+    void displayLinguisticVariable(AI::FuzzyLogic::LinguisticVariable<TPrecisionType>& in_linguisticVariable)
     {
         bool show_lines = true;
         bool show_fills = true;
@@ -31,12 +31,40 @@ namespace AI::FuzzyLogic::GUI
 
         ImGui::BeginGroup();
 
-        // allow legend labels to be dragged and dropped
-        ImGui::Selectable("DragMe", false, 0, ImVec2(100, 0));
-        int i = 0;
-        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None)) {
-            ImGui::SetDragDropPayload("DND_PLOT", &i, sizeof(int));
-            ImGui::TextUnformatted("DragMe");
+        // allow labels to be dragged and dropped
+        ImGui::Selectable("Left", false, 0, ImVec2(100, 0));
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+        {
+            FuzzySet::LeftFuzzySet<TPrecisionType> payloadData(-1.f, 1.f, -0.5f, 0.5f);
+            ImGui::SetDragDropPayload("DND_PLOT", payloadData.getPoints().data(), payloadData.getPoints().size() * sizeof(FuzzySet::Point2D<TPrecisionType>));
+            ImGui::TextUnformatted("Left");
+            ImGui::EndDragDropSource();
+        }
+
+        ImGui::Selectable("Trapezoidal", false, 0, ImVec2(100, 0));
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+        {
+            FuzzySet::TrapezoidalFuzzySet<TPrecisionType> payloadData(-1.f, 1.f, -1.f, -0.5f, 0.5f, 1.f);
+            ImGui::SetDragDropPayload("DND_PLOT", payloadData.getPoints().data(), payloadData.getPoints().size() * sizeof(FuzzySet::Point2D<TPrecisionType>));
+            ImGui::TextUnformatted("Trapezoidal");
+            ImGui::EndDragDropSource();
+        }
+
+        ImGui::Selectable("Triangular", false, 0, ImVec2(100, 0));
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+        {
+            FuzzySet::TriangularFuzzySet<TPrecisionType> payloadData(-1.f, 1.f, -1.f, 0.f, 1.f);
+            ImGui::SetDragDropPayload("DND_PLOT", payloadData.getPoints().data(), payloadData.getPoints().size() * sizeof(FuzzySet::Point2D<TPrecisionType>));
+            ImGui::TextUnformatted("Triangular");
+            ImGui::EndDragDropSource();
+        }
+
+        ImGui::Selectable("Right", false, 0, ImVec2(100, 0));
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+        {
+            FuzzySet::RightFuzzySet<TPrecisionType> payloadData(-1.f, 1.f, -0.5f, 0.5f);
+            ImGui::SetDragDropPayload("DND_PLOT", payloadData.getPoints().data(), payloadData.getPoints().size() * sizeof(FuzzySet::Point2D<TPrecisionType>));
+            ImGui::TextUnformatted("Right");
             ImGui::EndDragDropSource();
         }
 
@@ -71,24 +99,27 @@ namespace AI::FuzzyLogic::GUI
                 }
             }
 
-            if (ImPlot::BeginLegendDragDropSource("DragMe")) {
-                int i = 0;
-                ImGui::SetDragDropPayload("DND_PLOT", &i, sizeof(int));
-                ImGui::TextUnformatted("DragMe");
-                ImPlot::EndLegendDragDropSource();
-            }
-
             //Start drag and drop prefab fuzzy set
             // make our plot a drag and drop target
-            if (ImGui::BeginDragDropTarget()) {
-                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_PLOT")) {
-                    int i = *(int*)payload->Data;
-                    std::cout << i << std::endl;
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_PLOT"))
+                {
+                    std::vector<FuzzySet::Point2D<TPrecisionType>> points(static_cast<FuzzySet::Point2D<TPrecisionType>*>(payload->Data), static_cast<FuzzySet::Point2D<TPrecisionType>*>(payload->Data) + payload->DataSize / sizeof(FuzzySet::Point2D<TPrecisionType>));
+                    ImPlotPoint mousePos = ImPlot::GetPlotMousePos();
+
+                    for (FuzzySet::Point2D<TPrecisionType>& point : points)
+                    {
+                        point.setX(point.getX() + mousePos.x);
+                    }
+                    
+                    FuzzySet::FuzzySet<TPrecisionType> newFuzzySet(points.front().getX(), points.back().getX());
+                    newFuzzySet.setPoints(points);
+                    
+                    in_linguisticVariable.addValue(LinguisticValue<TPrecisionType>("Unknow", newFuzzySet));
                 }
                 ImGui::EndDragDropTarget();
             }
-
-
 
             static float  frequency = 0.1f;
             static float  amplitude = 0.5f;
