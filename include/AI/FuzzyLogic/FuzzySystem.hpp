@@ -35,15 +35,36 @@ namespace AI::FuzzyLogic
         protected:
     
         #pragma region attribut
-
         std::string m_name;
-        std::vector<LinguisticVariable<TPrecisionType>> m_inputs;
+        
+        //Represente the input linguistic variable with the variable associate to the current problem to solve
+        std::vector<FuzzyValue<TPrecisionType>> m_inputs;
+
+        //Represente the output linguistic variable use in with the problem is solved
         LinguisticVariable<TPrecisionType> m_output;
+
+        //Represent all the combinaision the solve the probelem between inputs and the outputs linguistic varaible
         std::vector<FuzzyRule<TPrecisionType>> m_rules;
-        std::vector<FuzzyValue<TPrecisionType>> m_problem;
+
 
         #pragma endregion //!attribut
     
+        #pragma region method
+        [[nodiscard]] constexpr inline
+        FuzzyValue<TPrecisionType>* const inputFuzzyValueByName(const std::string& in_name) noexcept
+        {
+            for (FuzzyValue<TPrecisionType>& input : m_inputs)
+            {
+                if (input.getName() == in_name)
+                {
+                    return &input;
+                }
+            }
+            return nullptr;
+        }
+
+        #pragma endregion //!method
+
         public:
     
         #pragma region constructor/destructor
@@ -70,8 +91,7 @@ namespace AI::FuzzyLogic
         FuzzySystem(const std::string& in_name) noexcept
             :   m_name      {in_name},
                 m_inputs    {}, 
-                m_rules     {},
-                m_problem   {}
+                m_rules     {}
         {}
 
         #pragma endregion //!constructor/destructor
@@ -79,9 +99,9 @@ namespace AI::FuzzyLogic
         #pragma region methods
 
         constexpr inline
-        void addInputVariable(const LinguisticVariable<TPrecisionType>& in_lv) noexcept
+        void addInputVariable(const LinguisticVariable<TPrecisionType>& in_lv, TPrecisionType in_problemValue = static_cast<TPrecisionType>(0)) noexcept
         {
-            m_inputs.emplace_back(in_lv);
+            m_inputs.emplace_back(in_lv, in_problemValue);
         }
 
         constexpr inline
@@ -97,43 +117,58 @@ namespace AI::FuzzyLogic
         }
 
         constexpr inline
-        void setInputVariable(const LinguisticVariable<TPrecisionType>& m_inputVar, TPrecisionType in_value) noexcept
+        void setFuzzyValue(const std::string& in_nameLinguistiqueVariable, TPrecisionType in_value) noexcept
         {
-            m_problem.emplace_back(FuzzyValue<TPrecisionType>(m_inputVar, in_value));
-        }
-        
-        constexpr inline
-        void resetCase() noexcept
-        {
-            m_problem.clear();
+            FuzzyValue<TPrecisionType>* const pFuzzyValue = inputFuzzyValueByName(in_nameLinguistiqueVariable);
+
+            if (pFuzzyValue)
+            {
+                pFuzzyValue->setValue(in_value);
+            }
         }
 
         [[nodiscard]] constexpr inline 
         TPrecisionType solve() noexcept
         {
-            FuzzySet::FuzzySet<TPrecisionType> res (m_output.getMin(), m_output.getMax());
-            res.add(m_output.getMin(), static_cast<TPrecisionType>(0));
-            res.add(m_output.getMax(), static_cast<TPrecisionType>(0));
+            //Fuzzication
+            FuzzySet::FuzzySet<TPrecisionType> fuzzication(m_output.getMin(), m_output.getMax());
+            fuzzication.add(m_output.getMin(), static_cast<TPrecisionType>(0));
+            fuzzication.add(m_output.getMax(), static_cast<TPrecisionType>(0));
+
             for (const FuzzyRule<TPrecisionType>& rule : m_rules)
             {
                 FuzzySet::FuzzySet<TPrecisionType> resultingSet;
-                if (rule.tryApply(resultingSet, m_problem))
+                if (rule.tryApply(resultingSet, m_inputs))
                 {
-                    res = res | resultingSet;
+                    fuzzication = fuzzication | resultingSet;
                 }
             }            
 
-            return res.centroid();
+            //Defuzzification
+            return fuzzication.centroid();
+        }
+
+        [[nodiscard]] constexpr inline
+        const LinguisticVariable<TPrecisionType>* const inputLinguisticVariableByName(const std::string& in_name) const noexcept
+        {
+            for (const FuzzyValue<TPrecisionType>& input : m_inputs)
+            {
+                if (input.getName() == in_name)
+                {
+                    return &input.getLinguisticVariable();
+                }
+            }
+            return nullptr;
         }
 
         [[nodiscard]] constexpr inline 
         const LinguisticVariable<TPrecisionType>* const linguisticVariableByName(const std::string& in_name) const noexcept
         {
-            for (const LinguisticVariable<TPrecisionType>& input : m_inputs)
+            for (const FuzzyValue<TPrecisionType>& input : m_inputs)
             {
                 if (input.getName() == in_name)
                 {
-                    return &input;
+                    return &input.getLinguisticVariable();
                 }
             }
 
@@ -150,16 +185,16 @@ namespace AI::FuzzyLogic
 
         DEFAULT_GETTER_SETTER(Name, m_name)
 
+        DEFAULT_CONST_GETTER(Inputs, m_inputs)
         DEFAULT_GETTER(Inputs, m_inputs)
         DEFAULT_SETTER(Inputs, m_inputs)
 
+        DEFAULT_CONST_GETTER(Output, m_output)
         DEFAULT_GETTER(Output, m_output)
         DEFAULT_SETTER(Output, m_output)
 
         DEFAULT_GETTER(Rules, m_rules)
         DEFAULT_SETTER(Rules, m_rules)
-
-        DEFAULT_GETTER_SETTER(Problem, m_problem)
 
         #pragma endregion //!accessor/mutator
     };

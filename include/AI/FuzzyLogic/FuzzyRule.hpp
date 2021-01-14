@@ -55,7 +55,7 @@ namespace AI::FuzzyLogic
             for(auto&& it = in_problem.begin(); it != in_problem.end(); ++it)
             {
                 problemValue = *it;
-                if (in_rulePremise.getLinguisticVariable().getName() == problemValue.getLinguistiqueVariable().getName())
+                if (in_rulePremise.getLinguisticVariable().getName() == problemValue.getLinguisticVariable().getName())
                 {
                     return computeDegree(in_rulePremise, in_val, problemValue);
                 }
@@ -188,6 +188,7 @@ namespace AI::FuzzyLogic
             for (const FuzzyExpression<TPrecisionType>& localPremise : m_premises)
             {
                 TPrecisionType localDegree = searchAndComputePremiseDegree(in_problem, localPremise, &val);
+                
                 
                 if (!val || localDegree == 0.f)
                     return false;

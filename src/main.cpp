@@ -201,10 +201,10 @@ int main(int, char**)
 
     // Ajout de la variable linguistique "Distance" (de 0 a 500 000 m)
     writeLine("Ajout de la variable Distance");
-    LinguisticVariable distance("Distance", 0.f, 500000.f, "Km");
-    distance.addValue(LinguisticValue("Faible", LeftFuzzySet(0.f, 500000.f, 30.f, 50.f)));
-    distance.addValue(LinguisticValue("Moyenne", TrapezoidalFuzzySet(0.f, 500000.f, 40.f, 50.f, 100.f, 150.f)));
-    distance.addValue(LinguisticValue("Grande", RightFuzzySet(0.f, 500000.f, 100.f, 150.f)));
+    LinguisticVariable distance("Distance", 0.f, 500.f, "Km");
+    distance.addValue(LinguisticValue("Faible", LeftFuzzySet(0.f, 500.f, 30.f, 50.f)));
+    distance.addValue(LinguisticValue("Moyenne", TrapezoidalFuzzySet(0.f, 500.f, 40.f, 50.f, 100.f, 150.f)));
+    distance.addValue(LinguisticValue("Grande", RightFuzzySet(0.f, 500.f, 100.f, 150.f)));
     system.addInputVariable(distance);
 
     // Ajout de la variable linguistique "Vitesse" (de 0 a 200)
@@ -252,51 +252,46 @@ int main(int, char**)
     writeLine("Cas 1 :", true);
     writeLine("V = 35 (peu rapide)");
     writeLine("D = 70 (moyenne)");
-    system.setInputVariable(vitesse, 35.f);
-    system.setInputVariable(distance, 70.f);
+    system.setFuzzyValue("Vitesse", 35.f);
+    system.setFuzzyValue("Distance", 70.f);
     writeLine("Attendu : zoom normal, centroide a 2.5");
     writeLine("Resultat : " + std::to_string(system.solve()) + "\n");
     
     // Cas pratique 2 : vitesse de 25 kms/h, et prochain changement de direction a 70m
-    system.resetCase();
     writeLine("Cas 2 :", true);
     writeLine("V = 25 (50% lente, 50% peu rapide)");
     writeLine("D = 70 (moyenne)");
-    system.setInputVariable(vitesse, 25.f);
-    system.setInputVariable(distance, 70.f);
+    system.setFuzzyValue("Vitesse", 25.f);
+    system.setFuzzyValue("Distance", 70.f);
     writeLine("Attendu : zoom normal a 50% + zoom petit a 50%");
     writeLine("Resultat : " + std::to_string(system.solve()) + "\n");
 
     // Cas pratique 3 : vitesse de 72.5 kms/h, et prochain changement de direction a 40m
-    system.resetCase();
     writeLine("Cas 3 :", true);
     writeLine("V = 72.5 (75% peu rapide + 25% rapide)");
     writeLine("D = 40 (50% faible)");
-    system.setInputVariable(vitesse, 72.5f);
-    system.setInputVariable(distance, 40.f);
+    system.setFuzzyValue("Vitesse", 72.5f);
+    system.setFuzzyValue("Distance", 40.f);
     writeLine("Attendu : zoom normal a 50% + zoom gros a 25%");
     writeLine("Resultat : " + std::to_string(system.solve()) + "\n");
 
     // Cas pratique 4 : vitesse de 100 kms/h, et prochain changement de direction a 110m
-    system.resetCase();
     writeLine("Cas 4 :", true);
     writeLine("V = 100 (50% rapide + 50% tres rapide)");
     writeLine("D = 110 (80% moyenne, 20% grande)");
-    system.setInputVariable(vitesse, 100.f);
-    system.setInputVariable(distance, 110.f);
+    system.setFuzzyValue("Vitesse", 100.f);
+    system.setFuzzyValue("Distance", 110.f);
     writeLine("Attendu : zoom petit a 20% + zoom normal a 50% + zoom gros a 50%");
     writeLine("Resultat : " + std::to_string(system.solve()) + "\n");
 
     // Cas pratique 5 : vitesse de 45 kms/h, et prochain changement de direction a 160m
-    system.resetCase();
     writeLine("Cas 5 :", true);
     writeLine("V = 45 (100% peu rapide)");
     writeLine("D = 160 (100% grande)");
-    system.setInputVariable(vitesse, 45.f);
-    system.setInputVariable(distance, 160.f);
+    system.setFuzzyValue("Vitesse", 45.f);
+    system.setFuzzyValue("Distance", 160.f);
     writeLine("Attendu : zoom petit a 100%");
     writeLine("Resultat : " + std::to_string(system.solve()) + "\n");
-
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -326,16 +321,6 @@ int main(int, char**)
         {
             displayFuzzyRules(system);
         }
-
-        
-        static float rst = 0.f;
-
-        if (ImGui::Button("Solve"))
-        {
-            rst = system.solve();
-        }
-        ImGui::SameLine();
-        ImGui::Text(to_string(rst).c_str());
 
         // Rendering
         ImGui::Render();

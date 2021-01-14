@@ -24,7 +24,7 @@ namespace AI::FuzzyLogic
     
         #pragma region attribut
 
-        LinguisticVariable<TPrecisionType>  m_linguistiqueVariable;
+        LinguisticVariable<TPrecisionType>  m_linguisticVariable;
         TPrecisionType                      m_value;
 
         #pragma endregion //!attribut
@@ -53,7 +53,7 @@ namespace AI::FuzzyLogic
 
         explicit constexpr inline
         FuzzyValue(const LinguisticVariable<TPrecisionType>& in_lv, TPrecisionType in_value) noexcept
-            :   m_linguistiqueVariable  {in_lv},
+            :   m_linguisticVariable  {in_lv},
                 m_value                 {in_value}
         {}
     
@@ -64,7 +64,14 @@ namespace AI::FuzzyLogic
     
         #pragma region accessor/mutator
 
-        DEFAULT_GETTER_SETTER(LinguistiqueVariable, m_linguistiqueVariable)
+        [[nodiscard]] constexpr inline
+        const std::string& getName() const noexcept { return m_linguisticVariable.getName(); }
+
+        DEFAULT_CONST_GETTER(LinguisticVariable, m_linguisticVariable)
+
+        DEFAULT_GETTER(LinguisticVariable, m_linguisticVariable)
+        
+        DEFAULT_SETTER(LinguisticVariable, m_linguisticVariable)
         DEFAULT_GETTER_SETTER(Value, m_value)
 
         #pragma endregion //!accessor/mutator
