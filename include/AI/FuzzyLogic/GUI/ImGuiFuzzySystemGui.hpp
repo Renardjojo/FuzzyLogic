@@ -116,7 +116,29 @@ namespace AI::FuzzyLogic::GUI
                     FuzzySet::FuzzySet<TPrecisionType> newFuzzySet(points.front().getX(), points.back().getX());
                     newFuzzySet.setPoints(points);
                     
-                    in_linguisticVariable.addValue(LinguisticValue<TPrecisionType>("Unknow", newFuzzySet));
+                    std::string nameId;
+                    int cpId = 0;
+                    bool valueFound;
+
+                    do
+                    {
+                        valueFound = false;
+                        nameId = cpId == 0 ? "Unknow" : "Unknow" + std::to_string(cpId);
+
+                        for (auto&& value : in_linguisticVariable.getValues())
+                        {
+                            if (value.getName() == nameId)
+                            {
+                                valueFound = true;
+                                ++cpId;
+                                break;
+                            }
+                        }
+
+                    } while (valueFound);
+                    
+
+                    in_linguisticVariable.addValue(LinguisticValue<TPrecisionType>(nameId, newFuzzySet));
                 }
                 ImGui::EndDragDropTarget();
             }
