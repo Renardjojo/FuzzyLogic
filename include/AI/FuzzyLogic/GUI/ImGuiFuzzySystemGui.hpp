@@ -11,6 +11,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "implot_internal.h"
 #include "imgui_internal.h"
 #include "imgui_stdlib.h"
 #include "implot.h"
@@ -118,6 +119,8 @@ namespace AI::FuzzyLogic::GUI
     template <typename TPrecisionType = float>
     void displayFuzzysetEditorLegendPopup(AI::FuzzyLogic::LinguisticValue<TPrecisionType>& in_linguisticValue)
     {
+        ImPlotItem* item = ImPlot::GetItem((in_linguisticValue.getName() + "###").c_str());
+        
         if (ImPlot::BeginLegendPopup((in_linguisticValue.getName() + "###").c_str()))
         {
             std::string newName = in_linguisticValue.getName();
@@ -148,27 +151,24 @@ namespace AI::FuzzyLogic::GUI
                 }
                 ImGui::EndTable();
             }
-
-            static float  frequency = 0.1f;
-            static float  amplitude = 0.5f;
-            static ImVec4 color = ImVec4(1, 1, 0, 1);
-            static float  alpha = 1.0f;
-            static bool   line = false;
-            static float  thickness = 1;
-            static bool   markers = false;
-            static bool   shaded = false;
-
-            ImGui::SliderFloat("Frequency", &frequency, 0, 1, "%0.2f");
-            ImGui::SliderFloat("Amplitude", &amplitude, 0, 1, "%0.2f");
+            
             ImGui::Separator();
-            ImGui::ColorEdit3("Color", &color.x);
-            ImGui::SliderFloat("Transparency", &alpha, 0, 1, "%.2f");
-            ImGui::Checkbox("Line Plot", &line);
-            if (line) {
-                ImGui::SliderFloat("Thickness", &thickness, 0, 5);
-                ImGui::Checkbox("Markers", &markers);
-                ImGui::Checkbox("Shaded", &shaded);
+
+            ImPlotContext& gp = *GImPlot;
+           
+            ImGui::Checkbox("Lines", &gp.NextItemData.RenderLine); ImGui::SameLine();
+            ImGui::Checkbox("Fills", &gp.NextItemData.RenderFill);
+
+            if (item->Show)
+            {
+                ImVec4 color = item->Color;
+
+                ImGui::ColorEdit3("Color", &color.x);
+
+                gp.NextItemData.Colors[ImPlotCol_Fill] = color;
+                gp.NextItemData.Colors[ImPlotCol_Line] = color;
             }
+            
             ImPlot::EndLegendPopup();
         }
     }
@@ -180,15 +180,15 @@ namespace AI::FuzzyLogic::GUI
 
         if (ImGui::CollapsingHeader((in_linguisticVariable.getName() + "###CollapsingHeader").c_str()))
         {
-            ImGui::InputText("Name", &in_linguisticVariable.getName());
+            std::string newName = in_linguisticVariable.getName();
+            ImGui::InputText("Name", &newName);
+
+            if (!newName.empty())
+            {
+                in_linguisticVariable.setName(newName);
+            }
+
             ImGui::DragFloatRange2("Min/Max values", &in_linguisticVariable.getMin(), &in_linguisticVariable.getMax());
-
-            bool show_lines = true;
-            bool show_fills = true;
-
-            static float fill_ref = 0;
-            ImGui::Checkbox("Lines", &show_lines); ImGui::SameLine();
-            ImGui::Checkbox("Fills", &show_fills);
 
             ImGui::BeginGroup();
 
@@ -238,8 +238,7 @@ namespace AI::FuzzyLogic::GUI
                 for (LinguisticValue<TPrecisionType>& value : in_linguisticVariable.getValues())
                 {
                     ImGui::PushID(&value);
-
-                    displayFuzzysetEditorLegendPopup(value);
+                    displayFuzzysetEditorLegendPopup(value);                    
 
                     std::vector<TPrecisionType> pointX;
                     std::vector<TPrecisionType> pointY;
@@ -250,18 +249,20 @@ namespace AI::FuzzyLogic::GUI
                         pointY.emplace_back(point.getY());
                     }
 
-                    if (show_fills)
-                    {
-                        ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+                    ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
 
+                    if (GImPlot->NextItemData.RenderFill)
+                    {
                         ImPlot::PlotShaded((value.getName() + "###").c_str(), pointX.data(), pointY.data(), pointX.size());
-                        
-                        ImPlot::PopStyleVar();
                     }
-                    if (show_lines)
+
+                    if (GImPlot->NextItemData.RenderLine)
                     {
                         ImPlot::PlotLine((value.getName() + "###").c_str(), pointX.data(), pointY.data(), pointX.size());
                     }
+
+                    ImPlot::PopStyleVar();
+                   
                     ImGui::PopID();
                 }
 
