@@ -350,7 +350,10 @@ namespace AI::FuzzyLogic::FuzzySet
     
         #pragma region accessor/mutator
 
-        DEFAULT_GETTER_SETTER(Points, m_points)
+        DEFAULT_SETTER(Points, m_points)
+        DEFAULT_CONST_GETTER(Points, m_points)
+        DEFAULT_GETTER(Points, m_points)
+        
         DEFAULT_GETTER_SETTER(Min, m_min)
         DEFAULT_GETTER_SETTER(Max, m_max)
 

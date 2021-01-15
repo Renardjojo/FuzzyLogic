@@ -67,6 +67,9 @@ namespace AI::FuzzyLogic
         [[nodiscard]] constexpr inline
         const std::string& getName() const noexcept { return m_linguisticVariable.getName(); }
 
+        [[nodiscard]] constexpr inline
+        std::string& getNameC() noexcept { return m_linguisticVariable.getName(); }
+
         DEFAULT_CONST_GETTER(LinguisticVariable, m_linguisticVariable)
 
         DEFAULT_GETTER(LinguisticVariable, m_linguisticVariable)

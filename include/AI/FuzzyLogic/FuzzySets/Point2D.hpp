@@ -74,8 +74,14 @@ namespace AI::FuzzyLogic::FuzzySet
 
         #pragma region mutator/accessor
 
-        DEFAULT_GETTER_SETTER(X, m_x)
-        DEFAULT_GETTER_SETTER(Y, m_y)
+        DEFAULT_SETTER(X, m_x)
+        DEFAULT_SETTER(Y, m_y)
+
+        DEFAULT_GETTER(X, m_x)
+        DEFAULT_GETTER(Y, m_y)
+
+        DEFAULT_CONST_GETTER(X, m_x)
+        DEFAULT_CONST_GETTER(Y, m_y)
 
         #pragma endregion //!mutator/accessor 
 

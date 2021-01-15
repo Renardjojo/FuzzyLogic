@@ -53,15 +53,15 @@ namespace AI::FuzzyLogic::GUI
             {
                 ImPlot::PlotLine("Fuzzification", pointX.data(), pointY.data(), pointX.size());
             }
+
+            float xs[2] = { centroid, centroid };
+            float ys[2] = { 0, 1 };
+
+            ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, ImPlot::GetStyle().MarkerSize, ImVec4(0, 0, 0, 0), ImPlot::GetStyle().MarkerWeight);
+            ImPlot::PlotLine("##CentroidMarker", xs, ys, 2);
+
+            ImPlot::EndPlot();
         }
-
-        float xs[2] = { centroid, centroid };
-        float ys[2] = { 0, 1 };
-
-        ImPlot::SetNextMarkerStyle(ImPlotMarker_Circle, ImPlot::GetStyle().MarkerSize, ImVec4(0, 0, 0, 0), ImPlot::GetStyle().MarkerWeight);
-        ImPlot::PlotLine("##CentroidMarker", xs, ys, 2);
-
-        ImPlot::EndPlot();
     }
 
     template <typename TPrecisionType = float>
@@ -101,8 +101,8 @@ namespace AI::FuzzyLogic::GUI
                     ImPlot::PlotLine(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
                 }
             }
+            ImPlot::EndPlot();
         }
-        ImPlot::EndPlot();
     }
 
     template <typename TPrecisionType = float>
@@ -111,6 +111,65 @@ namespace AI::FuzzyLogic::GUI
         if (ImGui::CollapsingHeader(in_linguisticVariable.getName().c_str()))
         {
             displayLinguisticVariable<TPrecisionType>(in_linguisticVariable);
+        }
+    }
+
+
+    template <typename TPrecisionType = float>
+    void displayFuzzysetEditorLegendPopup(AI::FuzzyLogic::LinguisticValue<TPrecisionType>& in_linguisticValue)
+    {
+        if (ImPlot::BeginLegendPopup((in_linguisticValue.getName() + "###").c_str()))
+        {
+            std::string newName = in_linguisticValue.getName();
+            ImGui::InputText("Name", &newName);
+
+            if (!newName.empty())
+            {
+                in_linguisticValue.setName(newName);
+            }
+
+            if (ImGui::BeginTable("##tableLegendPopup", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+            {
+                ImGui::TableSetupColumn("X");
+                ImGui::TableSetupColumn("Y");
+                ImGui::TableHeadersRow();
+            
+                for (int row = 0; row < in_linguisticValue.getFuzzySet().getPoints().size(); row++)
+                {
+                    ImGui::PushID(row);
+                    ImGui::TableNextRow();
+
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::DragFloat("##PtX", &in_linguisticValue.getFuzzySet().getPoints()[row].getX());
+
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::DragFloat("##PtY", &in_linguisticValue.getFuzzySet().getPoints()[row].getY(), 1.f/1000.f, 0.f, 1.f);
+                    ImGui::PopID();
+                }
+                ImGui::EndTable();
+            }
+
+            static float  frequency = 0.1f;
+            static float  amplitude = 0.5f;
+            static ImVec4 color = ImVec4(1, 1, 0, 1);
+            static float  alpha = 1.0f;
+            static bool   line = false;
+            static float  thickness = 1;
+            static bool   markers = false;
+            static bool   shaded = false;
+
+            ImGui::SliderFloat("Frequency", &frequency, 0, 1, "%0.2f");
+            ImGui::SliderFloat("Amplitude", &amplitude, 0, 1, "%0.2f");
+            ImGui::Separator();
+            ImGui::ColorEdit3("Color", &color.x);
+            ImGui::SliderFloat("Transparency", &alpha, 0, 1, "%.2f");
+            ImGui::Checkbox("Line Plot", &line);
+            if (line) {
+                ImGui::SliderFloat("Thickness", &thickness, 0, 5);
+                ImGui::Checkbox("Markers", &markers);
+                ImGui::Checkbox("Shaded", &shaded);
+            }
+            ImPlot::EndLegendPopup();
         }
     }
 
@@ -176,12 +235,16 @@ namespace AI::FuzzyLogic::GUI
             ImPlot::SetNextPlotLimits(in_linguisticVariable.getMin(), in_linguisticVariable.getMax(), 0, 1);
             if (ImPlot::BeginPlot(in_linguisticVariable.getName().c_str(), in_linguisticVariable.getUnit().c_str(), "Degree of belonging"))
             {
-                for (auto&& value : in_linguisticVariable.getValues())
+                for (LinguisticValue<TPrecisionType>& value : in_linguisticVariable.getValues())
                 {
-                    std::vector<float> pointX;
-                    std::vector<float> pointY;
+                    ImGui::PushID(&value);
 
-                    for (auto&& point : value.getFuzzySet().getPoints())
+                    displayFuzzysetEditorLegendPopup(value);
+
+                    std::vector<TPrecisionType> pointX;
+                    std::vector<TPrecisionType> pointY;
+
+                    for (const FuzzySet::Point2D<TPrecisionType>& point : value.getFuzzySet().getPoints())
                     {
                         pointX.emplace_back(point.getX());
                         pointY.emplace_back(point.getY());
@@ -191,14 +254,15 @@ namespace AI::FuzzyLogic::GUI
                     {
                         ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
 
-                        ImPlot::PlotShaded(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
-
+                        ImPlot::PlotShaded((value.getName() + "###").c_str(), pointX.data(), pointY.data(), pointX.size());
+                        
                         ImPlot::PopStyleVar();
                     }
                     if (show_lines)
                     {
-                        ImPlot::PlotLine(value.getName().c_str(), pointX.data(), pointY.data(), pointX.size());
+                        ImPlot::PlotLine((value.getName() + "###").c_str(), pointX.data(), pointY.data(), pointX.size());
                     }
+                    ImGui::PopID();
                 }
 
                 //Start drag and drop prefab fuzzy set
@@ -244,41 +308,9 @@ namespace AI::FuzzyLogic::GUI
                     }
                     ImGui::EndDragDropTarget();
                 }
-
-                static float  frequency = 0.1f;
-                static float  amplitude = 0.5f;
-                static ImVec4 color = ImVec4(1, 1, 0, 1);
-                static float  alpha = 1.0f;
-                static bool   line = false;
-                static float  thickness = 1;
-                static bool   markers = false;
-                static bool   shaded = false;
-
-                if (ImPlot::IsPlotHovered() && ImGui::IsMouseClicked(1))
-                {
-                    ImGui::OpenPopup("my_toggle_popup");
-                }
-
-                if (ImGui::BeginPopup("my_toggle_popup"))
-                {
-                    ImGui::SliderFloat("Frequency", &frequency, 0, 1, "%0.2f");
-                    ImGui::SliderFloat("Amplitude", &amplitude, 0, 1, "%0.2f");
-                    ImGui::Separator();
-                    ImGui::ColorEdit3("Color", &color.x);
-                    ImGui::SliderFloat("Transparency", &alpha, 0, 1, "%.2f");
-                    ImGui::Checkbox("Line Plot", &line);
-                    if (line)
-                    {
-                        ImGui::SliderFloat("Thickness", &thickness, 0, 5);
-                        ImGui::Checkbox("Markers", &markers);
-                        ImGui::Checkbox("Shaded", &shaded);
-                    }
-                    ImGui::EndPopup();
-                }
+                ImPlot::EndPlot();
             }
-            ImPlot::EndPlot();
         }
-
         ImGui::PopID();
     }
 
@@ -367,9 +399,9 @@ namespace AI::FuzzyLogic::GUI
             }
 
             //Defuzzification
-            rst = fuzzification.centroid();\
+            rst = fuzzification.centroid();
 
-                displayFuzzysificationAndDeffuzification(fuzzification, rst, in_system.getOutput().getName(), in_system.getOutput().getUnit());
+            displayFuzzysificationAndDeffuzification(fuzzification, rst, in_system.getOutput().getName(), in_system.getOutput().getUnit());
             ImGui::Text("Deffuzzification : ");  ImGui::SameLine();  ImGui::Text(std::to_string(rst).c_str());
         }
     }

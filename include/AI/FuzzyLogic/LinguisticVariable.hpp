@@ -110,7 +110,9 @@ namespace AI::FuzzyLogic
         DEFAULT_GETTER(Name, m_name)
         DEFAULT_SETTER(Name, m_name)
 
-        DEFAULT_GETTER_SETTER(Values, m_values)
+        DEFAULT_CONST_GETTER(Values, m_values)
+        DEFAULT_GETTER(Values, m_values)
+        DEFAULT_SETTER(Values, m_values)
 
         DEFAULT_SETTER(Min, m_minValue)
         DEFAULT_GETTER(Min, m_minValue)
