@@ -155,19 +155,12 @@ namespace AI::FuzzyLogic::GUI
             ImGui::Separator();
 
             ImPlotContext& gp = *GImPlot;
-           
-            ImGui::Checkbox("Lines", &gp.NextItemData.RenderLine); ImGui::SameLine();
-            ImGui::Checkbox("Fills", &gp.NextItemData.RenderFill);
+            ImVec4 color = item->Color;
 
-            if (item->Show)
-            {
-                ImVec4 color = item->Color;
+            ImGui::ColorEdit3("Color", &color.x);
 
-                ImGui::ColorEdit3("Color", &color.x);
-
-                gp.NextItemData.Colors[ImPlotCol_Fill] = color;
-                gp.NextItemData.Colors[ImPlotCol_Line] = color;
-            }
+            gp.NextItemData.Colors[ImPlotCol_Fill] = color;
+            gp.NextItemData.Colors[ImPlotCol_Line] = color;
             
             ImPlot::EndLegendPopup();
         }
