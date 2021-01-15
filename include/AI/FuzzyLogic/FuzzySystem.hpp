@@ -101,6 +101,21 @@ namespace AI::FuzzyLogic
         constexpr inline
         void addInputVariable(const LinguisticVariable<TPrecisionType>& in_lv, TPrecisionType in_problemValue = static_cast<TPrecisionType>(0)) noexcept
         {
+            for (auto&& input : m_inputs)
+            {
+                for (auto&& inputlinguisticValue : input.getLinguisticVariable().getValues())
+                {
+                    for (auto&& newInputlinguisticValue : in_lv.getValues())
+                    {
+                        std::vector<FuzzyExpression<TPrecisionType>> premis { FuzzyExpression<TPrecisionType>(input.getLinguisticVariable(), inputlinguisticValue.getName()),
+                                                                              FuzzyExpression<TPrecisionType>(in_lv,                         newInputlinguisticValue.getName())};
+                        FuzzyExpression<TPrecisionType> conclusion (m_output, m_output.getValues().front().getName());
+
+                        m_rules.emplace_back(FuzzyRule<TPrecisionType>(premis, conclusion));
+                    }
+                }
+            }
+
             m_inputs.emplace_back(in_lv, in_problemValue);
         }
 

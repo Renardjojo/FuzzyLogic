@@ -311,50 +311,71 @@ namespace AI::FuzzyLogic::GUI
     template <typename TPrecisionType = float>
     void displayFuzzyRules(AI::FuzzyLogic::FuzzySystem<TPrecisionType>& in_system)
     {
-        if (ImGui::BeginTable("##table1", in_system.getInputs()[0].getLinguisticVariable().getValues().size() + 1, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+        int rulesOffset = 0;
+        for (size_t i = 0; i < in_system.getInputs().size(); ++i)
         {
-            //Columns
-            ImGui::TableSetupColumn((in_system.getInputs()[0].getName() + "/" + in_system.getInputs()[1].getName()).c_str());
+            AI::FuzzyLogic::FuzzyValue<TPrecisionType>& input1 = in_system.getInputs()[i];
 
-            for (const LinguisticValue<TPrecisionType>& input : in_system.getInputs()[0].getLinguisticVariable().getValues())
-            {
-                float font_size = ImGui::GetFontSize() * input.getName().size() / 2;
-                ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
-                ImGui::TableSetupColumn(input.getName().c_str());
-            }
+            ImGui::PushID(i);
 
-            //Row
-            ImGui::TableHeadersRow();
+            for (size_t j = i + 1; j < in_system.getInputs().size(); ++j)
+            {  
+                ImGui::PushID(j);
+                AI::FuzzyLogic::FuzzyValue<TPrecisionType>& input2 = in_system.getInputs()[j];
 
-            for (int row = 0; row < in_system.getInputs()[1].getLinguisticVariable().getValues().size(); ++row)
-            {
-                ImGui::TableNextRow();
-
-                ImGui::TableSetColumnIndex(0);
-
-                ImGui::Text(in_system.getInputs()[1].getLinguisticVariable().getValues()[row].getName().c_str());
-
-                int idElem = 0;
-
-                for (int column = 1; column < in_system.getInputs()[0].getLinguisticVariable().getValues().size() + 1; ++column)
+                if (ImGui::BeginTable("##table", input1.getLinguisticVariable().getValues().size() + 1, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
                 {
-                    ImGui::TableSetColumnIndex(column);
+                    //Columns
+                    ImGui::TableSetupColumn((input2.getName() + "/" + input1.getName()).c_str());
 
-                    idElem = row * in_system.getInputs()[0].getLinguisticVariable().getValues().size() + (column - 1);
-                    if (ImGui::Button((in_system.getRules()[idElem].getConclusion().getName() + "##" + std::to_string(idElem)).c_str(), ImVec2(-FLT_MIN, 0.0f)))
+                    for (const LinguisticValue<TPrecisionType>& input : input1.getLinguisticVariable().getValues())
                     {
-                        int currentIndex = 0;
-                        while (in_system.getOutput().getValues()[currentIndex].getName() != in_system.getRules()[idElem].getConclusion().getName().c_str())
-                        {
-                            ++currentIndex;
-                        }
-
-                        in_system.getRules()[idElem].setConclusion(FuzzyExpression(in_system.getOutput(), in_system.getOutput().getValues()[++currentIndex % in_system.getOutput().getValues().size()].getName()));
+                        float font_size = ImGui::GetFontSize() * input.getName().size() / 2;
+                        ImGui::SameLine(ImGui::GetWindowSize().x / 2 - font_size + (font_size / 2));
+                        ImGui::TableSetupColumn(input.getName().c_str());
                     }
+
+                    //Row
+                    ImGui::TableHeadersRow();
+
+                    for (int row = 0; row < input2.getLinguisticVariable().getValues().size(); ++row)
+                    {
+                        ImGui::TableNextRow();
+
+                        ImGui::TableSetColumnIndex(0);
+
+                        ImGui::Text(input2.getLinguisticVariable().getValues()[row].getName().c_str());
+
+                        int idElem = 0;
+
+                        for (int column = 1; column < input1.getLinguisticVariable().getValues().size() + 1; ++column)
+                        {
+                            ImGui::TableSetColumnIndex(column);
+
+                            idElem = row * input1.getLinguisticVariable().getValues().size() + (column - 1);
+                            idElem += rulesOffset;
+
+                            if (ImGui::Button((in_system.getRules()[idElem].getConclusion().getName() + "##" + std::to_string(idElem)).c_str(), ImVec2(-FLT_MIN, 0.0f)))
+                            {
+                                int currentIndex = 0;
+                                while (in_system.getOutput().getValues()[currentIndex].getName() != in_system.getRules()[idElem].getConclusion().getName().c_str())
+                                {
+                                    ++currentIndex;
+                                }
+
+                                in_system.getRules()[idElem].setConclusion(FuzzyExpression(in_system.getOutput(), in_system.getOutput().getValues()[++currentIndex % in_system.getOutput().getValues().size()].getName()));
+                            }
+                        }
+                    }
+                    ImGui::EndTable();
                 }
+                ImGui::PopID();
+                rulesOffset += input1.getLinguisticVariable().getValues().size() * input2.getLinguisticVariable().getValues().size();
             }
-            ImGui::EndTable();
+            ImGui::PopID();
         }
+
+        std::cout << std::endl << std::endl << std::endl << std::endl;
         ImGui::TreePop();
     }
 
