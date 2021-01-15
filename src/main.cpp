@@ -207,6 +207,14 @@ int main(int, char**)
     distance.addValue(LinguisticValue("Grande", RightFuzzySet(0.f, 500.f, 100.f, 150.f)));
     system.addInputVariable(distance);
 
+    // Ajout de la variable linguistique "Zoom" (de 0 a 5)
+    writeLine("Ajout de la variable Zoom");
+    LinguisticVariable zoom("Zoom", 0.f, 5.f, "Level");
+    zoom.addValue(LinguisticValue("Petit", LeftFuzzySet(0.f, 5.f, 1.f, 2.f)));
+    zoom.addValue(LinguisticValue("Normal", TrapezoidalFuzzySet(0.f, 5.f, 1.f, 2.f, 3.f, 4.f)));
+    zoom.addValue(LinguisticValue("Gros", RightFuzzySet(0.f, 5.f, 3.f, 4.f)));
+    system.setOutput(zoom);
+
     // Ajout de la variable linguistique "Vitesse" (de 0 a 200)
     writeLine("Ajout de la variable Vitesse");
     LinguisticVariable vitesse("Vitesse", 0.f, 200.f, "Km/h");
@@ -216,13 +224,6 @@ int main(int, char**)
     vitesse.addValue(LinguisticValue("TresRapide", RightFuzzySet(0.f, 200.f, 90.f, 110.f)));
     system.addInputVariable(vitesse);
 
-    // Ajout de la variable linguistique "Zoom" (de 0 a 5)
-    writeLine("Ajout de la variable Zoom");
-    LinguisticVariable zoom("Zoom", 0.f, 5.f, "Level");
-    zoom.addValue(LinguisticValue("Petit", LeftFuzzySet(0.f, 5.f, 1.f, 2.f)));
-    zoom.addValue(LinguisticValue("Normal", TrapezoidalFuzzySet(0.f, 5.f, 1.f, 2.f, 3.f, 4.f)));
-    zoom.addValue(LinguisticValue("Gros", RightFuzzySet(0.f, 5.f, 3.f, 4.f)));
-    system.setOutput(zoom);
 
     writeLine("2) Ajout des regles", true);
 
@@ -233,6 +234,7 @@ int main(int, char**)
     // Peu Ra || N | N | P |
     // Rapide || G | N | P |
     // Tres R || G | G | P |
+    /*
     system.addFuzzyRule("IF Distance IS Faible AND Vitesse IS Lente THEN Zoom IS Normal");
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS Lente THEN Zoom IS Petit");
     system.addFuzzyRule("IF Distance IS Grande AND Vitesse IS Lente THEN Zoom IS Petit");
@@ -246,6 +248,7 @@ int main(int, char**)
     system.addFuzzyRule("IF Distance IS Moyenne AND Vitesse IS TresRapide THEN Zoom IS Gros");
     system.addFuzzyRule("IF Distance IS Grande AND Vitesse IS TresRapide THEN Zoom IS Petit");
     writeLine("12 regles ajoutees \n");
+    */
     
     writeLine("3) Resolution de cas pratiques", true);
     // Cas pratique 1 : vitesse de 35 kms/h, et prochain changement de direction a 70m
